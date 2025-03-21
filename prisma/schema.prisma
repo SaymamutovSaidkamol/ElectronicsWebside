@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SUPERADMIN
+  USER
+}
+
+enum CategoryType {
+  Accessories
+  Laptops
+  Phone
+  Electronics
+}
+
+enum ProductStatus {
+  new
+  old
+}
+
+model Users {
+  id       Int    @id @default(autoincrement())
+  fullName String
+  email    String @unique
+  phone    String
+  password String
+  img      String
+  role     Role   @default(USER)
+  status   String @default("INACTIVE")
+
+  order    Order[]
+  view     Views[]
+  likes    Likes[]
+  comment  Comment[]
+  fromUser Chats[]   @relation("SentChats")
+  toUser   Chats[]   @relation("ReceivedChats")
+}
+
+model Category {
+  id   String       @id @default(uuid())
+  name String
+  type CategoryType
+
+  banner Banner[]
+}
+
+model Banner {
+  id                Int           @id @default(autoincrement())
+  name              String
+  price             BigInt
+  description       String
+  status            ProductStatus
+  count             Int
+  approved_by_admin Boolean
+  categoryId        String
+
+  category Category  @relation(fields: [categoryId], references: [id])
+  order    Order[]
+  view     Views[]
+  likes    Likes[]
+  comment  Comment[]
+  chats    Chats[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  count     Int
+  orderDate DateTime @default(now())
+
+  banner Banner @relation(fields: [productId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id])
+}
+
+model Views {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  view_at   DateTime @default(now())
+
+  product Banner @relation(fields: [productId], references: [id])
+  user    Users  @relation(fields: [userId], references: [id])
+}
+
+model Likes {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  productId Int
+
+  product Banner @relation(fields: [productId], references: [id])
+  user    Users  @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  comment   String
+  createdAt  DateTime @default(now())
+
+  product Banner @relation(fields: [productId], references: [id])
+  user    Users  @relation(fields: [userId], references: [id])
+}
+
+model Chats {
+  id          Int      @id @default(autoincrement())
+  from_userId Int
+  to_userId   Int
+  productId   Int
+  time        DateTime @default(now())
+  message     String
+
+  product  Banner @relation(fields: [productId], references: [id])
+  fromUser Users  @relation(fields: [from_userId], references: [id], name: "SentChats")
+  toUser   Users  @relation(fields: [to_userId], references: [id], name: "ReceivedChats")
+}
+
+// import { IsInt, IsOptional } from 'class-validator';
+// export class CreateOrderDto {
+// @IsInt()
+// userId: number;
+
+// @IsInt()
+// productId: number;
+
+// @IsInt()
+// count: number;
+
+// @IsOptional()
+// orderDate?: Date = new Date(); // Hozirgi vaqtni avtomatik qo‘shish
+// }
