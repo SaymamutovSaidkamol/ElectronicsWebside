@@ -50,7 +50,7 @@ model Users {
 }
 
 model Category {
-  id   String       @id @default(uuid())
+  id   Int          @id @default(autoincrement())
   name String
   type CategoryType
 
@@ -65,9 +65,9 @@ model Banner {
   status            ProductStatus
   count             Int
   approved_by_admin Boolean
-  categoryId        String
+  categoryId        Int
 
-  category Category  @relation(fields: [categoryId], references: [id])
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   order    Order[]
   view     Views[]
   likes    Likes[]
@@ -82,8 +82,8 @@ model Order {
   count     Int
   orderDate DateTime @default(now())
 
-  banner Banner @relation(fields: [productId], references: [id])
-  user   Users  @relation(fields: [userId], references: [id])
+  banner Banner @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Views {
@@ -92,8 +92,8 @@ model Views {
   productId Int
   view_at   DateTime @default(now())
 
-  product Banner @relation(fields: [productId], references: [id])
-  user    Users  @relation(fields: [userId], references: [id])
+  product Banner @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Likes {
@@ -101,8 +101,8 @@ model Likes {
   userId    Int
   productId Int
 
-  product Banner @relation(fields: [productId], references: [id])
-  user    Users  @relation(fields: [userId], references: [id])
+  product Banner @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Comment {
@@ -110,10 +110,10 @@ model Comment {
   userId    Int
   productId Int
   comment   String
-  createdAt  DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  product Banner @relation(fields: [productId], references: [id])
-  user    Users  @relation(fields: [userId], references: [id])
+  product Banner @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Chats {
@@ -124,9 +124,9 @@ model Chats {
   time        DateTime @default(now())
   message     String
 
-  product  Banner @relation(fields: [productId], references: [id])
-  fromUser Users  @relation(fields: [from_userId], references: [id], name: "SentChats")
-  toUser   Users  @relation(fields: [to_userId], references: [id], name: "ReceivedChats")
+  product  Banner @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fromUser Users  @relation(fields: [from_userId], references: [id], name: "SentChats", onDelete: Cascade, onUpdate: Cascade)
+  toUser   Users  @relation(fields: [to_userId], references: [id], name: "ReceivedChats", onDelete: Cascade, onUpdate: Cascade)
 }
 
 // import { IsInt, IsOptional } from 'class-validator';

@@ -1,11 +1,17 @@
 export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
-  SUPERADMIN = 'SUPERADMIN'
+  SUPERADMIN = 'SUPERADMIN',
 }
-
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE'
+  INACTIVE = 'INACTIVE',
+}
+
+export enum CategoryType {
+  Accessories = 'Accessories',
+  Laptops = 'Laptops',
+  Phone = 'Phone',
+  Electronics = 'Electronics',
 }

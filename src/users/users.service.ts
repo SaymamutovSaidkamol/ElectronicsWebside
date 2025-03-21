@@ -81,7 +81,6 @@ export class UsersService {
       status: checkUser.status,
     });
 
-
     return {
       token
     };
