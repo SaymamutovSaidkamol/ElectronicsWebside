@@ -8,6 +8,10 @@ import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { BannerModule } from './banner/banner.module';
 import { OrdersModule } from './orders/orders.module';
+import { ViewsModule } from './views/views.module';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { OrdersModule } from './orders/orders.module';
     CategoryModule,
     BannerModule,
     OrdersModule,
+    ViewsModule,
+    LikesModule,
+    CommentsModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

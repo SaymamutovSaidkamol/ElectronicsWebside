@@ -15,9 +15,6 @@ export class CreateBannerDto {
   @IsString()
   description: string;
 
-  // @ApiProperty({ example: ['new', 'old'] })
-  // @IsString()
-  // status: BannerStatus;
   @ApiProperty({ example: ['new', 'old'] })
   @IsEnum(BannerStatus)
   status: BannerStatus;
@@ -32,4 +29,11 @@ export class CreateBannerDto {
   @ApiProperty({ example: 1 })
   @IsNumber()
   categoryId: number;
+
+  @IsNumber()
+  userId: number;
+
+  @ApiProperty({ example: "image.jpg" })
+  @IsString()
+  img: string;
 }

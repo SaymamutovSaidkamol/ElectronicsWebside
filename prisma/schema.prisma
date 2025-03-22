@@ -41,6 +41,7 @@ model Users {
   role     Role   @default(USER)
   status   String @default("INACTIVE")
 
+  banner   Banner[]
   order    Order[]
   view     Views[]
   likes    Likes[]
@@ -66,7 +67,10 @@ model Banner {
   count             Int
   approved_by_admin Boolean       @default(false)
   categoryId        Int
+  userId            Int
+  img               String?
 
+  user     Users     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   order    Order[]
   view     Views[]

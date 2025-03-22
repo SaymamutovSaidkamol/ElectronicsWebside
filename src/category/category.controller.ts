@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/role.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RoleGuard } from 'src/auth/role.guard';
+import { Role } from 'src/Enums/role.enum';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
@@ -47,11 +53,18 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
+
+  
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
+  
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.categoryService.remove(id);

@@ -5,21 +5,15 @@ import {
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
-  async create(data: CreateOrderDto) {
-    data.userId = Number(data.userId);
+  async create(data: CreateOrderDto, req: Request) {
     data.productId = Number(data.productId);
 
-    let checkUser = await this.prisma.users.findFirst({
-      where: { id: data.userId },
-    });
-
-    if (!checkUser) {
-      throw new BadRequestException('User Not Found');
-    }
+    data.userId = req['user'].id;
 
     let checkProd = await this.prisma.banner.findFirst({
       where: { id: data.productId },
@@ -56,7 +50,10 @@ export class OrdersService {
     return { data: allOrder };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, req: Request) {
+    if (req['user'].id !== id) {
+      throw new BadRequestException('Your rights are limited.');
+    }
     id = Number(id);
 
     let checkOrder = await this.prisma.order.findFirst({
@@ -82,7 +79,11 @@ export class OrdersService {
     return { data: checkOrder };
   }
 
-  async remove(id: number) {
+  async remove(id: number, req: Request) {
+    if (req['user'].id !== id && req['user'].role !== "ADMIN") {
+      throw new BadRequestException('Your rights are limited.');
+    }
+
     id = Number(id);
     let checkOrder = await this.prisma.order.findFirst({
       where: { id },

@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { MailService } from 'src/mail/mail.service';
 import { totp } from 'otplib';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 totp.options = { step: 120 };
 
@@ -22,7 +23,7 @@ export class UsersService {
   ) {}
   async register(data: RegisterDto) {
     let checkUser = await this.prisma.users.findFirst({
-      where: { fullName: data.fullName },
+      where: { email: data.email },
     });
 
     if (checkUser) {
@@ -40,15 +41,18 @@ export class UsersService {
     data.password = hashPass;
 
     let otp = totp.generate('secret' + data.email);
-    
+
     let sendOtp = await this.mailer.sendMail(
       data.email,
       'New Otp',
       `new Otp:  ${otp}`,
     );
+
+    if (data.role) {
+      data.role = 'USER';
+    }
     await this.prisma.users.create({ data });
 
-    
     return {
       message: 'Register Successfully, OTP sent, please activate your account',
       otp,
@@ -64,7 +68,7 @@ export class UsersService {
       throw new NotFoundException('User Not Found');
     }
 
-    if (checkUser.status !== "ACTIVE") {
+    if (checkUser.status !== 'ACTIVE') {
       throw new BadRequestException('Plase Activate your acount');
     }
 
@@ -74,7 +78,7 @@ export class UsersService {
       throw new NotFoundException('Wrong Password');
     }
 
-    let token = this.generateAccessToken({
+    let token = await this.jwtService.sign({
       id: checkUser.id,
       name: checkUser.fullName,
       role: checkUser.role,
@@ -82,7 +86,7 @@ export class UsersService {
     });
 
     return {
-      token
+      token,
     };
   }
 
@@ -93,7 +97,7 @@ export class UsersService {
 
   async findOne(id: string) {
     let OneCateg = await this.prisma.users.findFirst({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
 
     if (!OneCateg) {
@@ -103,16 +107,25 @@ export class UsersService {
     return { data: OneCateg };
   }
 
+  async Update(id: number, data: UpdateUserDto, req: Request) {
+    return {
+      message: 'Changes saved successfully',
+      data: await this.prisma.users.updateMany({ data, where: { id } }),
+    };
+  }
+
   async remove(id: string, req: Request) {
     console.log(req['user']);
 
-    if (req['user'].id !== id || req['user'].role !== 'ADMIN') {
+    if (req['user'].id !== id && req['user'].role !== 'ADMIN') {
       throw new BadRequestException(
         'You cannot send your information to someone else.',
       );
     }
 
-    let OneCateg = await this.prisma.users.findFirst({ where: { id: Number(id) } });
+    let OneCateg = await this.prisma.users.findFirst({
+      where: { id: Number(id) },
+    });
 
     if (!OneCateg) {
       throw new NotFoundException('Users Not Found');
@@ -144,13 +157,6 @@ export class UsersService {
     });
 
     return { message: 'Your account has been activated.' };
-  }
-
-  generateAccessToken(payload: any) {
-    return this.jwtService.sign(payload, {
-      secret: 'access_key',
-      expiresIn: '20s', // 15 daqiqa
-    });
   }
 
   generateRefreshToken(payload: any) {
