@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('category')
 export class CategoryController {
@@ -10,6 +11,30 @@ export class CategoryController {
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
+  }
+
+
+  @Get('/query')
+  @ApiOperation({
+    summary: 'Hududlarni qidirish',
+    description: 'Berilgan parametrlar bo‘yicha hududlarni qidirish',
+  })
+  @ApiResponse({ status: 200, description: 'Muvaffaqiyatli bajarildi' })
+  @ApiResponse({ status: 400, description: 'Noto‘g‘ri so‘rov' })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'type', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'sortBy', required: false, type: String, example: 'name' })
+  @ApiQuery({
+    name: 'order',
+    required: false,
+    type: String,
+    enum: ['asc', 'desc'],
+    example: 'asc',
+  })
+  query(@Query() data: any){
+    return this.categoryService.query(data)
   }
 
   @Get()
@@ -28,7 +53,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.categoryService.remove(id);
   }
 }

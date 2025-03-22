@@ -15,3 +15,8 @@ export enum CategoryType {
   Phone = 'Phone',
   Electronics = 'Electronics',
 }
+
+export enum BannerStatus {
+  new = 'new',
+  old = 'old',
+}

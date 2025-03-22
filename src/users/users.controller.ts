@@ -37,8 +37,8 @@ export class UsersController {
     return this.usersService.verify(data)
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(AuthGuard, RoleGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(AuthGuard, RoleGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
