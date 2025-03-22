@@ -12,7 +12,7 @@ import { MailModule } from 'src/mail/mail.module';
     JwtModule.register({
       global: true,
       secret: 'access_key',
-      signOptions: { expiresIn: '20s' },
+      signOptions: { expiresIn: '20h' },
     }),
   ],
   exports: [JwtModule],

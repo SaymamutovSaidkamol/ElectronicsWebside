@@ -20,14 +20,14 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      let data = this.jwtService.verify(token, { secret: 'acess_key' });
+      let data = this.jwtService.verify(token);
 
       request['user'] = data;
       return true;
     } catch (error) {
       console.log(error);
       
-      throw new BadRequestException('Token Not Found', error.message);
+      throw new BadRequestException('Your rights are limited.', error.message);
     }
   }
 }

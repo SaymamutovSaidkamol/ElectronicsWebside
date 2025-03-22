@@ -40,6 +40,8 @@ CREATE TABLE "Banner" (
     "count" INTEGER NOT NULL,
     "approved_by_admin" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "img" TEXT,
 
     CONSTRAINT "Banner_pkey" PRIMARY KEY ("id")
 );
@@ -99,6 +101,9 @@ CREATE TABLE "Chats" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
+
+-- AddForeignKey
+ALTER TABLE "Banner" ADD CONSTRAINT "Banner_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Banner" ADD CONSTRAINT "Banner_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;

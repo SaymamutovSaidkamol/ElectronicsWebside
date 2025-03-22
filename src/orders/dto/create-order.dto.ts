@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional } from 'class-validator';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 1 })
   @IsNumber()
   userId: number;
 
