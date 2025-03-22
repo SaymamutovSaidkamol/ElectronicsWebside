@@ -39,7 +39,7 @@ export class CategoryService {
       where: { id },
     });
 
-    if (checkCateg) {
+    if (!checkCateg) {
       throw new BadRequestException('Category Not Found');
     }
 
@@ -48,10 +48,10 @@ export class CategoryService {
 
   async update(id: number, data: UpdateCategoryDto) {
     let checkCateg = await this.prisma.category.findFirst({
-      where: { id},
+      where: { id },
     });
 
-    if (checkCateg) {
+    if (!checkCateg) {
       throw new BadRequestException('Category Not Found');
     }
 
@@ -66,17 +66,48 @@ export class CategoryService {
   }
 
   async remove(id: number) {
+    id = Number(id)
     let checkCateg = await this.prisma.category.findFirst({
-      where: { id},
+      where: { id },
     });
 
-    if (checkCateg) {
+    if (!checkCateg) {
       throw new BadRequestException('Category Not Found');
     }
-
+    
     let delCateg = await this.prisma.category.delete({
-      where: { id},
+      where: { id },
     });
     return { message: 'Category Success deleted', data: delCateg };
+  }
+
+  query(data: any) {
+    let { type, name, page, limit, sortBy, order, ...filters } = data;
+
+    page = page || 1;
+    limit = limit || 10;
+    sortBy = sortBy || 'name';
+    order = order || 'asc';
+
+    const query: any = { where: { ...filters } };
+
+    if (name) {
+      query.where.name = name;
+    }
+
+    if (type) {
+      query.where.type = type;
+    }
+
+    const skip = (page - 1) * limit;
+
+    return this.prisma.category.findMany({
+      ...query,
+      orderBy: {
+        [sortBy]: order === 'asc' ? 'asc' : 'desc',
+      },
+      skip: skip,
+      take: parseInt(limit, 10),
+    });
   }
 }

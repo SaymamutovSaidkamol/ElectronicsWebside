@@ -60,11 +60,11 @@ model Category {
 model Banner {
   id                Int           @id @default(autoincrement())
   name              String
-  price             BigInt
+  price             Int
   description       String
   status            ProductStatus
   count             Int
-  approved_by_admin Boolean
+  approved_by_admin Boolean       @default(false)
   categoryId        Int
 
   category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)

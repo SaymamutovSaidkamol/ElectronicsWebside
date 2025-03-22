@@ -34,11 +34,11 @@ CREATE TABLE "Category" (
 CREATE TABLE "Banner" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "price" BIGINT NOT NULL,
+    "price" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
     "status" "ProductStatus" NOT NULL,
     "count" INTEGER NOT NULL,
-    "approved_by_admin" BOOLEAN NOT NULL,
+    "approved_by_admin" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" INTEGER NOT NULL,
 
     CONSTRAINT "Banner_pkey" PRIMARY KEY ("id")
