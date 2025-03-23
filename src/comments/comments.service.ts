@@ -55,14 +55,8 @@ export class CommentsService {
     };
   }
 
-  async MyComments(id: number) {
-    return `This action returns a #${id} comment`;
-  }
-
   async update(id: number, data: UpdateCommentDto, req: Request) {
-    if (id !== req['user'].id && req['user'].role !== "ADMIN" && req['user'].role !== "SUPERADMIN") {
-      throw new BadRequestException("Your rights are limited.")
-    }
+
 
     let checkUser = await this.prisma.comment.findFirst({
       where: { id },
@@ -70,6 +64,10 @@ export class CommentsService {
 
     if (!checkUser) {
       throw new NotFoundException('Comment Not Found');
+    }
+
+    if (checkUser.userId !== req['user'].id && req['user'].role !== "ADMIN" && req['user'].role !== "SUPERADMIN") {
+      throw new BadRequestException("Your rights are limited.")
     }
 
     let updateComment = await this.prisma.comment.updateMany({
@@ -80,15 +78,17 @@ export class CommentsService {
   }
 
   async remove(id: number, req: Request) {
-    if (id !== req['user'].id && req['user'].role !== "ADMIN") {
-      throw new BadRequestException("Your rights are limited.")
-    }
+
     let checkUser = await this.prisma.comment.findFirst({
       where: { id },
     });
 
     if (!checkUser) {
       throw new NotFoundException('Comment Not Found');
+    }
+
+    if (checkUser.userId !== req['user'].id && req['user'].role !== "ADMIN") {
+      throw new BadRequestException("Your rights are limited.")
     }
 
     return {

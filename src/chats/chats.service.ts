@@ -9,7 +9,6 @@ export class ChatsService {
   constructor(private prisma: PrismaService) {}
   async create(data: CreateChatDto, req: Request) {
     data.from_userId = req['user'].id
-
     let checkUser = await this.prisma.users.findFirst({
       where: { id: data.to_userId },
     });
@@ -55,16 +54,17 @@ export class ChatsService {
   }
 
   async update(id: number, data: UpdateChatDto, req: Request) {
-    if (req['user'].id !== id && req['user'].role !== "ADMIN" && req['user'].role !== "SUPERADMIN") {
-      throw new BadRequestException("Your rights are limited.")
-    }
-
+    id = Number(id)
     let checkChats = await this.prisma.chats.findFirst({
       where: { id },
     });
 
     if (!checkChats) {
       throw new BadRequestException('Chats User not found');
+    }
+
+    if (req['user'].id !== checkChats.from_userId && req['user'].role !== "ADMIN" && req['user'].role !== "SUPERADMIN") {
+      throw new BadRequestException("Your rights are limited.")
     }
 
     let checkUser = await this.prisma.users.findFirst({
@@ -82,11 +82,7 @@ export class ChatsService {
   }
 
   async remove(id: number, req: Request) {
-
-    if (req['user'].id !== id || req['user'].role !== "ADMIN") {
-      throw new BadRequestException("Your rights are limited.")
-    }
-
+    id = Number(id)
     let checkChats = await this.prisma.chats.findFirst({
       where: { id },
     });
@@ -94,6 +90,11 @@ export class ChatsService {
     if (!checkChats) {
       throw new BadRequestException('Chats User not found');
     }
+
+    if (req['user'].id !== checkChats.from_userId && req['user'].role !== "ADMIN") {
+      throw new BadRequestException("Your rights are limited.")
+    }
+
     return {
       message: 'Chats successfully deleted',
       data: await this.prisma.chats.delete({ where: { id } }),

@@ -119,17 +119,16 @@ export class BannerService {
 
   async remove(id: number, req: Request) {
     id = Number(id);
-
-    if (req['user'].role !== 'ADMIN' && id !== req['user'].id) {
-      throw new BadRequestException('Your rights are limited.');
-    }
-
+    
     let checkCateg = await this.prisma.banner.findFirst({
       where: { id },
     });
-
+    
     if (!checkCateg) {
       throw new BadRequestException('banner Not Found');
+    }
+    if (req['user'].role != 'ADMIN' && checkCateg.userId != req['user'].id) {
+      throw new BadRequestException('Your rights are limited.');
     }
     
     let delCateg = await this.prisma.banner.delete({

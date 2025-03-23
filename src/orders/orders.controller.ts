@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { Role } from 'src/Enums/role.enum';
 import { Roles } from 'src/decorators/role.decorator';
+import { RoleGuard } from 'src/auth/role.guard';
 
 @Controller('orders')
 export class OrdersController {
@@ -16,11 +17,10 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto, req);
   }
 
-  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  findAll(@Req() req: Request) {
+    return this.ordersService.findAll(req);
   }
 
   @UseGuards(AuthGuard)

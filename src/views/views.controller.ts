@@ -4,6 +4,8 @@ import { CreateViewDto } from './dto/create-view.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Role } from 'src/Enums/role.enum';
 import { Roles } from 'src/decorators/role.decorator';
+import { Request } from 'express';
+import { RoleGuard } from 'src/auth/role.guard';
 
 @Controller('views')
 export class ViewsController {
@@ -16,10 +18,10 @@ export class ViewsController {
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Get()
-  findAll() {
-    return this.viewsService.findAll();
+  findAll(@Req() req: Request) {
+    return this.viewsService.findAll(req);
   }
 
 }

@@ -115,9 +115,8 @@ export class UsersService {
   }
 
   async remove(id: string, req: Request) {
-    console.log(req['user']);
-
-    if (req['user'].id !== id && req['user'].role !== 'ADMIN') {
+    
+    if (req['user'].id != id && req['user'].role != 'ADMIN') {
       throw new BadRequestException(
         'You cannot send your information to someone else.',
       );
