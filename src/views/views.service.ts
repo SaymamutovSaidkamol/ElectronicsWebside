@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateViewDto } from './dto/create-view.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class ViewsService {
@@ -31,13 +32,14 @@ export class ViewsService {
     return { message: 'New view success added', data: newView };
   }
 
-  async findAll() {
+  async findAll(req: Request) {
     return {
       data: await this.prisma.views.findMany({
         include: {
           user: { select: { id: true, fullName: true, role: true } },
           product: true,
         },
+        where: {}
       }),
     };
   }

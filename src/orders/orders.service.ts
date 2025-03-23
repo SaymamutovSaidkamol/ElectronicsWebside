@@ -27,7 +27,7 @@ export class OrdersService {
     return { message: 'Order Success added', data: newOrder };
   }
 
-  async findAll() {
+  async findAll(req: Request) {
     let allOrder = await this.prisma.order.findMany({
       include: {
         user: { select: { id: true, fullName: true, role: true } },
@@ -41,7 +41,11 @@ export class OrdersService {
           },
         },
       },
+      where: {userId: req['user'].id}
     });
+
+    console.log(allOrder);
+    
 
     if (allOrder.length === 0) {
       throw new NotFoundException('Order Not Found');
@@ -51,9 +55,6 @@ export class OrdersService {
   }
 
   async findOne(id: number, req: Request) {
-    if (req['user'].id !== id) {
-      throw new BadRequestException('Your rights are limited.');
-    }
     id = Number(id);
 
     let checkOrder = await this.prisma.order.findFirst({
@@ -76,23 +77,27 @@ export class OrdersService {
       throw new BadRequestException('order Not Found');
     }
 
+    if (req['user'].id !== checkOrder.userId) {
+      throw new BadRequestException('Your rights are limited.');
+    }
+
     return { data: checkOrder };
   }
 
   async remove(id: number, req: Request) {
-    if (req['user'].id !== id && req['user'].role !== "ADMIN") {
-      throw new BadRequestException('Your rights are limited.');
-    }
-
+    
     id = Number(id);
     let checkOrder = await this.prisma.order.findFirst({
       where: { id },
     });
-
+    
     if (!checkOrder) {
       throw new BadRequestException('order Not Found');
     }
-
+    if (req['user'].id !== checkOrder.userId && req['user'].role !== "ADMIN") {
+      throw new BadRequestException('Your rights are limited.');
+    }
+    
     let delOrder = await this.prisma.order.delete({
       where: { id },
     });

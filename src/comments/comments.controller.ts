@@ -24,12 +24,6 @@ export class CommentsController {
     return this.commentsService.findAll();
   }
 
-  @UseGuards(AuthGuard)
-  @Get(':id')
-  MyComments(@Param('id') id: number,) {
-    return this.commentsService.MyComments(+id);
-  }
-
   @UseGuards(AuthGuard, RoleGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateCommentDto: UpdateCommentDto, @Req() req: Request) {
