@@ -6,10 +6,11 @@ import {
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
+import { ChatGateway } from 'src/socket/socket.gateway';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private chatGateway: ChatGateway) {}
   async create(data: CreateOrderDto, req: Request) {
     data.productId = Number(data.productId);
 
@@ -23,6 +24,11 @@ export class OrdersService {
       throw new BadRequestException('Product Not Found');
     }
     let newOrder = await this.prisma.order.create({ data });
+
+    this.chatGateway.notifyUsers('new-order', {
+      message: 'Yangi buyurtma yaratildi!',
+      order: newOrder,
+    });
 
     return { message: 'Order Success added', data: newOrder };
   }

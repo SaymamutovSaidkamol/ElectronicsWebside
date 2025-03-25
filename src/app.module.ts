@@ -12,6 +12,8 @@ import { ViewsModule } from './views/views.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { ChatsModule } from './chats/chats.module';
+import { ChatGateway } from './socket/socket.gateway';
+import { ChatModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -27,8 +29,9 @@ import { ChatsModule } from './chats/chats.module';
     LikesModule,
     CommentsModule,
     ChatsModule,
+    ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}
