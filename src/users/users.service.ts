@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { MailService } from 'src/mail/mail.service';
 import { totp } from 'otplib';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersModule } from './users.module';
 
 totp.options = { step: 120 };
 
@@ -115,7 +116,6 @@ export class UsersService {
   }
 
   async remove(id: string, req: Request) {
-    
     if (req['user'].id != id && req['user'].role != 'ADMIN') {
       throw new BadRequestException(
         'You cannot send your information to someone else.',
@@ -163,5 +163,20 @@ export class UsersService {
       secret: 'refresh_key',
       expiresIn: '59s', // 7 kun
     });
+  }
+
+  async GetMe(req: Request) {
+    return {
+      data: await this.prisma.users.findMany({
+        where: { id: req['user'].id },
+        include: {
+          likes: true,
+          comment: true,
+          order: true,
+          banner: true,
+          view: true,
+        },
+      }),
+    };
   }
 }
