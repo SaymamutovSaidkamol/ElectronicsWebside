@@ -19,7 +19,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-
+  @UseGuards(AuthGuard)
   @Get('/query')
   @ApiOperation({
     summary: 'Hududlarni qidirish',
@@ -43,17 +43,17 @@ export class CategoryController {
     return this.categoryService.query(data)
   }
 
+  @UseGuards(AuthGuard, RoleGuard)
   @Get()
   findAll() {
     return this.categoryService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
   }
-
-
   
   @Roles(Role.ADMIN, Role.SUPERADMIN)
   @UseGuards(AuthGuard, RoleGuard)

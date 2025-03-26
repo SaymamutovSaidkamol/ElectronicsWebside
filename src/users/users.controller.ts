@@ -38,10 +38,15 @@ export class UsersController {
   }
 
   // @Roles(Role.ADMIN)
-  // @UseGuards(AuthGuard, RoleGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+  
+  @UseGuards(AuthGuard)
+  @Get('/me')
+  GetMe(@Req() req: Request) {
+    return this.usersService.GetMe(req);
   }
 
   @Roles(Role.ADMIN)
